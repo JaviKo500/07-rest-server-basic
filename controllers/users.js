@@ -12,17 +12,13 @@ const usersPost = async (req, res = response) => {
     try {
         const { name, email, password, role } = req.body;
         const user = new User( { name, email, password, role } );
-        const exitsEmail = await User.findOne( {email} );
-        if( exitsEmail ) return res.status(400).json({
-            msg: 'Email is register'
-        });
         const salt = bcrypt.genSaltSync(10);
         user.password = bcrypt.hashSync( password, salt );
         await user.save();
         res.status(200).json({
             msg: 'save user',
             user
-        })
+        });
     } catch (error) {
         res.status(500).json({
             error
@@ -31,12 +27,25 @@ const usersPost = async (req, res = response) => {
     }
 }
 
-const usersPut = (req = request, res = response) => {
-    const {id} = req.params;
-    res.json({
-        msg: ' api controller put',
-        id
-    })
+const usersPut = async (req = request, res = response) => {
+    try {
+        const {id} = req.params;
+        const {_id, password, google, email, ...rest } =req.body;
+        if ( password ) {
+            const salt = bcrypt.genSaltSync(10);
+            rest.password = bcrypt.hashSync( password, salt );
+        }
+        const userDb = await User.findByIdAndUpdate( id, rest )
+        res.json({
+            msg: ' api controller put',
+            rest
+        })
+    } catch (error) {
+        res.status(500).json({
+            error
+        })
+        console.log(`error put: ${error}`);
+    }
 }
 const usersDelete = (req, res = response) => {
     const {id} = req.params;

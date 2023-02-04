@@ -1,6 +1,7 @@
-const { Schema, model } = require("mongoose")
+const { Schema, model } = require("mongoose");
+const { use } = require("../routes/users");
 
-const UserSchema = {
+const UserSchema = Schema({
     name: {
         type: String,
         require: [ true, 'Name is required' ]
@@ -30,6 +31,11 @@ const UserSchema = {
         type: Boolean,
         default: false
     }
+});
+
+UserSchema.methods.toJSON = function () {
+    const {__v, password, ...user} = this.toObject();
+    return user;
 };
 
 module.exports = model( 'User', UserSchema );
