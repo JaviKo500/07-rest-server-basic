@@ -1,12 +1,26 @@
 const { response, request } = require("express");
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
-const usersGet = (req = request, res = response) => {
-    const {q, name = 'no name'} = req.query;
-    res.json({
-        msg: ' api controller get',
-        q,name
-    })
+const usersGet = async (req = request, res = response) => {
+    try {
+        const { limit = 5, since = 0 } = req.query;
+        const query = { status:true};
+        const [total, users] = await Promise.all([
+            User.countDocuments( query ),
+            User.find( query )
+            .skip( Number(since) )
+            .limit( Number(limit) )
+        ]);
+        res.status(200).json({
+            total,
+            users
+        });
+    } catch (error) {
+        res.status(500).json({
+          error,
+        });
+        console.log(`error get: ${error}`);  
+    }
 }
 const usersPost = async (req, res = response) => {
     try {
