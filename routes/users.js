@@ -21,6 +21,10 @@ router.post('/', [
     check( 'email' ).custom( existEmail ),
     validateFields,
 ] , usersPost );
-router.delete('/:id', usersDelete);
+router.delete('/:id',[
+    check('id', 'Invalid id').isMongoId(),
+    check( 'id' ).custom( existUserById ),
+    validateFields
+],usersDelete);
 router.patch('/', usersPatch);
 module.exports = router;

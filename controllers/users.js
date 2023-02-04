@@ -61,12 +61,22 @@ const usersPut = async (req = request, res = response) => {
         console.log(`error put: ${error}`);
     }
 }
-const usersDelete = (req, res = response) => {
-    const {id} = req.params;
-    res.json({
-        msg: ' api controller delete',
-        id
-    })
+const usersDelete = async (req, res = response) => {
+    try {
+        const {id} = req.params;
+        // delete physical
+        // const user = await User.findByIdAndDelete( id );
+        const user = await User.findByIdAndUpdate( id, { status: false } );
+
+        res.status(200).json({
+          user,
+        });
+    } catch (error) {
+        res.status(500).json({
+          error,
+        });
+        console.log(`error delete: ${error}`);
+    }
 }
 const usersPatch = (req, res = response) => {
     res.json({
