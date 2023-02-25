@@ -64,10 +64,9 @@ const usersPut = async (req = request, res = response) => {
 const usersDelete = async (req, res = response) => {
     try {
         const {id} = req.params;
-        // delete physical
+        //* delete physical
         // const user = await User.findByIdAndDelete( id );
         const user = await User.findByIdAndUpdate( id, { status: false } );
-
         res.status(200).json({
           user,
         });
