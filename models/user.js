@@ -1,5 +1,4 @@
 const { Schema, model } = require("mongoose");
-const { use } = require("../routes/users");
 
 const UserSchema = Schema({
     name: {

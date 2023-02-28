@@ -6,8 +6,11 @@ class Server {
     constructor() {
         this.app = express();
         this.port = process.env.PORT;
-        this.usersRoutePath = '/api/users';
-        this.authPath = '/api/auth';
+        this.paths = {
+            usersRoute: '/api/users',
+            auth: '/api/auth',
+            categories: '/api/categories',
+        };
         // connect db
         this.connectionDB();
         // Middleware
@@ -28,8 +31,9 @@ class Server {
         this.app.use( express.static('public') );
     }
     routes() {
-        this.app.use( this.usersRoutePath, require('../routes/users') );
-        this.app.use( this.authPath, require('../routes/auth') );
+        this.app.use( this.paths.usersRoute, require('../routes/users') );
+        this.app.use( this.paths.auth, require('../routes/auth') );
+        this.app.use( this.paths.categories, require('../routes/categories') );
     }
 
     listen() {
