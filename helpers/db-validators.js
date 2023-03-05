@@ -1,3 +1,4 @@
+const { Category } = require('../models');
 const Role = require('../models/role'); 
 const User = require('../models/user');
 
@@ -24,8 +25,30 @@ const existUserById = async ( id = '') => {
         throw new Error(`This isn't a valid Mongoose ID`);
     }
 }
+
+const existCategory = async ( id = '' ) => {
+    try {
+        const categoryExist = await Category.findById( id );
+        if ( !categoryExist ) {
+            throw new Error(`The category with id '${ id }' doesn't exist`)
+        }
+    } catch (error) {
+        throw new Error(`This isn't a valid Mongoose ID`);
+    }
+}
+
+const existCategoryName = async ( name = '') => {
+    name = name.toUpperCase();
+    const exitsName = await Category.findOne( { name } );
+    console.log(exitsName);
+    if( exitsName ) {
+        throw new Error( `Name: ${name} exist` );
+    }
+}
 module.exports = {
     isValidRol,
     existEmail,
-    existUserById
+    existUserById,
+    existCategory,
+    existCategoryName
 };
