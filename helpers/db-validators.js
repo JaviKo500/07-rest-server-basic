@@ -1,4 +1,4 @@
-const { Category } = require('../models');
+const { Category, Product } = require('../models');
 const Role = require('../models/role'); 
 const User = require('../models/user');
 
@@ -45,10 +45,21 @@ const existCategoryName = async ( name = '') => {
         throw new Error( `Name: ${name} exist` );
     }
 }
+
+const existProductName = async ( name = '') => {
+    name = name.toUpperCase();
+    console.log(name);
+    const exitsName = await Product.findOne( { name } );
+    console.log(exitsName);
+    if( exitsName ) {
+        throw new Error( `Name: ${name} exist` );
+    }
+}
 module.exports = {
     isValidRol,
     existEmail,
     existUserById,
     existCategory,
-    existCategoryName
+    existCategoryName,
+    existProductName
 };
