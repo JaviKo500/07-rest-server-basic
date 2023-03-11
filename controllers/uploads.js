@@ -66,7 +66,49 @@ const updateFile = async ( req = request,  res = response ) => {
   }
 }
 
+const getFile = async (req = request, res =  response) => {
+  try {
+    const { collection, id } = req.params; 
+    let model;
+    switch ( collection ) {
+      case 'users':
+        model = await User.findById(id);
+        if( !model ) return res.status(400).json({
+          msg: 'Not exist this user',
+        });
+      break;
+      case 'products':
+        model = await Product.findById(id);
+        if( !model ) return res.status(400).json({
+          msg: 'Not exist this product',
+        });
+      break;
+      default:
+        return res.status(500).json({
+          msg: `I forgot valid this ${collection}`,
+        });
+    }
+
+    //* verification image
+    
+    if ( model.picture ) {
+      const picturePath = path.join( __dirname, '../uploads', collection, model.picture );
+      if ( fs.existsSync(picturePath) ) {
+        return res.sendFile( picturePath );
+      }
+    }
+    res.status(200).json({
+      msg: 'Not implement placeholder',
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: error.toString(),
+    });
+  }
+}
+
 module.exports = {
   loadFile,
-  updateFile
+  updateFile,
+  getFile
 }
