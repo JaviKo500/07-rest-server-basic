@@ -65,6 +65,14 @@ const existProductName = async ( name = '') => {
         throw new Error( `Name: ${name} exist` );
     }
 }
+
+const allowedCollections = ( collection=  '', allowedCollections = []) => {
+    if ( !allowedCollections.includes( collection ) ) {
+        throw new Error( `Allowed collections: ${allowedCollections}` );
+    }
+    return true;
+}
+
 module.exports = {
     isValidRol,
     existEmail,
@@ -72,5 +80,6 @@ module.exports = {
     existCategory,
     existCategoryName,
     existProduct,
-    existProductName
+    existProductName,
+    allowedCollections
 };
