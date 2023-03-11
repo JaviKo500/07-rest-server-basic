@@ -46,9 +46,19 @@ const existCategoryName = async ( name = '') => {
     }
 }
 
+const existProduct = async ( id = '' ) => {
+    try {
+        const productExist = await Product.findById( id );
+        if ( !productExist ) {
+            throw new Error(`The product with id '${ id }' doesn't exist`)
+        }
+    } catch (error) {
+        throw new Error(`This isn't a valid Mongoose ID`);
+    }
+}
+
 const existProductName = async ( name = '') => {
-    name = name.toUpperCase();
-    console.log(name);
+    name = name?.toUpperCase();
     const exitsName = await Product.findOne( { name } );
     console.log(exitsName);
     if( exitsName ) {
@@ -61,5 +71,6 @@ module.exports = {
     existUserById,
     existCategory,
     existCategoryName,
+    existProduct,
     existProductName
 };
