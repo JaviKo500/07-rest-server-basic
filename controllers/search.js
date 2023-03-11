@@ -15,7 +15,7 @@ const searchUser = async ( term = '', res = response ) => {
           results: user ? [ user ] : []
         });
     }
-    const regExp = new RegExp( term, 'i' )
+    const regExp = new RegExp( term, 'i' );
     const users = await User.find({
         $or: [
             {name : regExp},
@@ -36,7 +36,7 @@ const searchCategories = async ( term = '', res = response ) => {
           results: category ? [ category ] : []
         });
     }
-    const regExp = new RegExp( term, 'i' )
+    const regExp = new RegExp( term, 'i' );
     const categories = await Category.find({
         $or: [
             {name : regExp},
@@ -56,7 +56,7 @@ const searchProducts = async ( term = '', res = response ) => {
           results: product ? [ product ] : []
         });
     }
-    const regExp = new RegExp( term, 'i' )
+    const regExp = new RegExp( term, 'i' );
     const products = await Product.find({
         $or: [
             {name : regExp},
