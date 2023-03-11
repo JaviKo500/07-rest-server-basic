@@ -7,10 +7,11 @@ class Server {
         this.app = express();
         this.port = process.env.PORT;
         this.paths = {
-            usersRoute: '/api/users',
             auth: '/api/auth',
             categories: '/api/categories',
             products: '/api/products',
+            search: '/api/search',
+            usersRoute: '/api/users',
         };
         // connect db
         this.connectionDB();
@@ -32,10 +33,11 @@ class Server {
         this.app.use( express.static('public') );
     }
     routes() {
-        this.app.use( this.paths.usersRoute, require('../routes/users') );
         this.app.use( this.paths.auth, require('../routes/auth') );
         this.app.use( this.paths.categories, require('../routes/categories') );
         this.app.use( this.paths.products, require('../routes/products') );
+        this.app.use( this.paths.usersRoute, require('../routes/users') );
+        this.app.use( this.paths.search, require('../routes/search') );
     }
 
     listen() {
