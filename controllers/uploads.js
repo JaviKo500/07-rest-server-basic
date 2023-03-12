@@ -70,23 +70,27 @@ const getFile = async (req = request, res =  response) => {
   try {
     const { collection, id } = req.params; 
     let model;
+    const placeholderPath = path.join( __dirname, '../assets', 'no-image.jpg' );
+    const existPlaceholder = fs.existsSync(placeholderPath);
+    console.log(existPlaceholder);
     switch ( collection ) {
       case 'users':
         model = await User.findById(id);
-        if( !model ) return res.status(400).json({
-          msg: 'Not exist this user',
-        });
-      break;
+        if( !model && existPlaceholder ) {
+          return res.sendFile( placeholderPath );
+        }
+        break;
       case 'products':
         model = await Product.findById(id);
-        if( !model ) return res.status(400).json({
-          msg: 'Not exist this product',
-        });
-      break;
+        if( !model && existPlaceholder ) {
+          return res.sendFile( placeholderPath );
+        }
+        break;
       default:
-        return res.status(500).json({
-          msg: `I forgot valid this ${collection}`,
-        });
+        if( existPlaceholder ) {
+          return res.sendFile( placeholderPath );
+        } 
+        throw new Error('Not implement image');
     }
 
     //* verification image
@@ -97,9 +101,11 @@ const getFile = async (req = request, res =  response) => {
         return res.sendFile( picturePath );
       }
     }
-    res.status(200).json({
-      msg: 'Not implement placeholder',
-    });
+
+    if ( existPlaceholder) {
+      return res.sendFile( placeholderPath );
+    }
+    throw new Error('Not implement image');
   } catch (error) {
     res.status(400).json({
       error: error.toString(),
