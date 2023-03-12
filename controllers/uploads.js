@@ -1,8 +1,13 @@
 const path = require('path');
 const fs = require('fs');
+
+const cloudinary = require('cloudinary').v2;
+cloudinary.config( process.env.CLOUDINARY_URL );
+
 const { request, response } = require('express');
 const { uploadFile } = require('../helpers');
 const { User, Product } = require('../models');
+
 
 
 const loadFile = async (req= request, res =response) => {
@@ -113,8 +118,55 @@ const getFile = async (req = request, res =  response) => {
   }
 }
 
+
+const updateFileCloudinary = async ( req = request,  res = response ) => {
+  try {
+    const { id, collection } = req.params;
+    let model;
+    switch ( collection ) {
+      case 'users':
+        model = await User.findById(id);
+        if( !model ) return res.status(400).json({
+          msg: 'Not exist this user',
+        });
+      break;
+      case 'products':
+        model = await Product.findById(id);
+        if( !model ) return res.status(400).json({
+          msg: 'Not exist this product',
+        });
+      break;
+      default:
+        return res.status(500).json({
+          msg: `I forgot valid this ${collection}`,
+        });
+    }
+
+    // delete previous image
+    
+    if ( model.picture ) {
+      const nameArr = model.picture.split('/');
+      const name = nameArr[ nameArr.length - 1 ];
+      const [ public_id ] = name.split('.'); 
+      cloudinary.uploader.destroy( public_id );
+    }
+    const {tempFilePath} = req.files.file;
+    const {secure_url} = await cloudinary.uploader.upload( tempFilePath );
+    model.picture = secure_url;
+    await model.save();
+    res.status(200).json({
+      model
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: error.toString(),
+    });
+  }
+}
+
 module.exports = {
   loadFile,
   updateFile,
-  getFile
+  getFile,
+  updateFileCloudinary
 }
