@@ -40,9 +40,12 @@ function handleCredentialResponse(response) {
         body: JSON.stringify( body )
     } )
         .then( resp => resp.json() )
-        .then( ({ token }) => {
-            console.log(token)
+        .then( ({msg, token, user }) => {
+            if ( msg !== 'Login ok' ) throw new Error( 'Not correct authenticated' );
+            const {email} = user; 
             localStorage.setItem( 'token', token );
+            localStorage.setItem( 'email', email)
+            window.location = 'chat.html';
         })
         .catch(console.warn)
 

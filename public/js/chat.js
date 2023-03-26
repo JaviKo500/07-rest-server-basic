@@ -12,6 +12,21 @@ const ulMessages= document.querySelector('#ulMessages');
 const btnOut= document.querySelector('#btnOut');
 
 
+btnOut.addEventListener('click', () => {
+    const email = localStorage.getItem('email');
+    // if ( email ) {
+    //     console.log(email);
+    //     google.accounts.id.disableAutoSelect();
+    //     google.accounts.id.revoke( email , done => {
+    //         localStorage.clear();
+    //         location.reload();
+    //     });
+    // }
+    localStorage.clear();
+    window.location = 'index.html';
+    user = null;
+});
+
 const validateJWT = async () => {
     const token = localStorage.getItem('token') ?? '';
 
@@ -28,8 +43,9 @@ const validateJWT = async () => {
     });
 
     const { userAuthenticated, token: tokenDB } = await resp.json();
-    localStorage.setItem('token', tokenDB)
+    localStorage.setItem('token', tokenDB);
     user = userAuthenticated;
+    console.log(user);
     document.title = user.name;
     await connectSocket();
 }
@@ -53,14 +69,29 @@ const connectSocket = async (params) => {
     socket.on('receive-message', () => {
         // TODO:
     });
-    socket.on('active-users', () => {
-        // TODO:
-    });
+    socket.on('active-users', drawerUsers);
     socket.on('private-message', () => {
         // TODO: 
     });
 
 }
+
+const drawerUsers = ( users = [] ) => {
+    let usersHtml = '';
+    users.forEach(({ name, uuid}) => {
+        usersHtml += `
+            <li>
+                <p>
+                    <h5 class="success">${name}</h5>
+                    <span class="fs-6 text-muted">${uuid}</span>
+                </p>
+            </li>
+        `;
+    });
+
+    ulUsers.innerHTML = usersHtml;
+}
+
 const main = async () => {
     await validateJWT()
 }
