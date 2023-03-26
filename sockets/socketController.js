@@ -14,11 +14,18 @@ const socketController = async ( socket = new Socket(), io ) => {
     // * add user
     chatMessage.addUser( user );
     io.emit('active-users', chatMessage.usersArr ); 
-
+    socket.emit('receive-message', chatMessage.last10 ); 
+    
+    socket.
 
     socket.on( 'disconnect', ( ) =>{
         chatMessage.userDisconnect( user._id);
         io.emit('active-users', chatMessage.usersArr );
+    });
+
+    socket.on( 'send-message', ({ message, uid }) =>{
+        chatMessage.sendMessage( user._id, user.name, message )
+        io.emit('receive-message', chatMessage.last10 );
     });
 }
 

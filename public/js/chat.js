@@ -66,10 +66,10 @@ const connectSocket = async (params) => {
         console.log('sockets offline');
     });
 
-    socket.on('receive-message', () => {
-        // TODO:
-    });
+    socket.on('receive-message', drawerMessages);
+
     socket.on('active-users', drawerUsers);
+
     socket.on('private-message', () => {
         // TODO: 
     });
@@ -82,7 +82,7 @@ const drawerUsers = ( users = [] ) => {
         usersHtml += `
             <li>
                 <p>
-                    <h5 class="success">${name}</h5>
+                    <h5 class="text-success">${name}</h5>
                     <span class="fs-6 text-muted">${uuid}</span>
                 </p>
             </li>
@@ -90,6 +90,32 @@ const drawerUsers = ( users = [] ) => {
     });
 
     ulUsers.innerHTML = usersHtml;
+}
+
+
+textMessage.addEventListener('keyup', ({keyCode}) => {
+    const uid = textUid.value;
+    if ( keyCode !== 13 )  return;
+    const message = textMessage.value;
+    if ( message.length === 0 ) return;
+    socket.emit('send-message', {message, uid});
+    textMessage.value = '';
+});
+
+const drawerMessages = ( messages = [] ) => {
+    let messagesHtml = '';
+    messages.forEach(({ name, message}) => {
+        messagesHtml += `
+            <li>
+                <p>
+                    <span class="text-primary">${name}</span>
+                    <span>${message}</span>
+                </p>
+            </li>
+        `;
+    });
+
+    ulMessages.innerHTML = messagesHtml;
 }
 
 const main = async () => {
