@@ -16,7 +16,8 @@ const socketController = async ( socket = new Socket(), io ) => {
     io.emit('active-users', chatMessage.usersArr ); 
     socket.emit('receive-message', chatMessage.last10 ); 
     
-    socket.
+    // * connect private sale
+    socket.join( user._id.toString() ); // global sale uuid
 
     socket.on( 'disconnect', ( ) =>{
         chatMessage.userDisconnect( user._id);
@@ -24,8 +25,13 @@ const socketController = async ( socket = new Socket(), io ) => {
     });
 
     socket.on( 'send-message', ({ message, uid }) =>{
-        chatMessage.sendMessage( user._id, user.name, message )
-        io.emit('receive-message', chatMessage.last10 );
+        if ( uid ) {
+            console.log(uid);
+            socket.to( uid ).emit( 'private-message', { uid: user._id, from: user.name, message} );
+        } else {
+            chatMessage.sendMessage( user._id, user.name, message )
+            io.emit('receive-message', chatMessage.last10 );
+        }
     });
 }
 

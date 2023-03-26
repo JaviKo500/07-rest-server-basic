@@ -2,13 +2,15 @@ const baseUrl = 'http://localhost:8080/api/auth';
 
 let user =  null;
 let socket = null;
-
+const privateMessage = {};
+const onlineUsers=[];
 // * references
 
 const textUid= document.querySelector('#textUid');
 const textMessage= document.querySelector('#textMessage');
 const ulUsers= document.querySelector('#ulUsers');
 const ulMessages= document.querySelector('#ulMessages');
+const ulPrivateMessages= document.querySelector('#ulPrivateMessages');
 const btnOut= document.querySelector('#btnOut');
 
 
@@ -70,17 +72,27 @@ const connectSocket = async (params) => {
 
     socket.on('active-users', drawerUsers);
 
-    socket.on('private-message', () => {
-        // TODO: 
+    socket.on('private-message', ( payload ) => {
+        const { uid, ...rest} =  payload;
+        if ( privateMessage[uid] ) {
+            privateMessage[uid].messages.push( { ...rest } );
+        } else {
+            privateMessage[uid] = { messages: [ {...rest} ]}; 
+        }
+        console.log(privateMessage);
+        drawerPrivateMessages( uid );
     });
 
 }
 
+let ilsUsersOnline = null;
+
 const drawerUsers = ( users = [] ) => {
+    onlineUsers.push( ...users );
     let usersHtml = '';
     users.forEach(({ name, uuid}) => {
         usersHtml += `
-            <li>
+            <li id="${uuid}">
                 <p>
                     <h5 class="text-success">${name}</h5>
                     <span class="fs-6 text-muted">${uuid}</span>
@@ -90,17 +102,35 @@ const drawerUsers = ( users = [] ) => {
     });
 
     ulUsers.innerHTML = usersHtml;
+    actionsUsersOnline();
 }
 
-
+const actionsUsersOnline = () => {
+    ilsUsersOnline = document.querySelectorAll("#ulUsers > li");
+    for (let index = 0; index < ilsUsersOnline.length; index++) {
+        ilsUsersOnline[index].addEventListener('click', ()=> {
+            const uid = ilsUsersOnline[index].id;
+            textUid.value = uid;
+            drawerPrivateMessages( uid )
+        });
+    }
+}
 textMessage.addEventListener('keyup', ({keyCode}) => {
     const uid = textUid.value;
     if ( keyCode !== 13 )  return;
     const message = textMessage.value;
     if ( message.length === 0 ) return;
+
+    if ( privateMessage[uid] ) {
+        privateMessage[uid].messages.push( { from: 'you', message } );
+    } else {
+        privateMessage[uid] = { messages: [ { from: 'you', message } ]}; 
+    }
+    drawerPrivateMessages(uid);
     socket.emit('send-message', {message, uid});
     textMessage.value = '';
 });
+
 
 const drawerMessages = ( messages = [] ) => {
     let messagesHtml = '';
@@ -116,6 +146,25 @@ const drawerMessages = ( messages = [] ) => {
     });
 
     ulMessages.innerHTML = messagesHtml;
+}
+
+const drawerPrivateMessages = ( uid = '' ) => {
+    let messagesHtml = '';
+    const messages = privateMessage[uid]?.messages;
+    console.log(messages);
+    if( !messages ) return ulPrivateMessages.innerHTML =`<span class="text-info">Not messages</span>`;
+    messages.forEach(({ from, message}) => {
+        messagesHtml += `
+            <li>
+                <p>
+                    <span class="text-primary">${from}</span>
+                    <span>${message}</span>
+                </p>
+            </li>
+        `;
+    });
+
+    ulPrivateMessages.innerHTML = messagesHtml;
 }
 
 const main = async () => {
