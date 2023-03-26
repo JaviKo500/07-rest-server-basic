@@ -47,7 +47,6 @@ const validateJWT = async () => {
     const { userAuthenticated, token: tokenDB } = await resp.json();
     localStorage.setItem('token', tokenDB);
     user = userAuthenticated;
-    console.log(user);
     document.title = user.name;
     await connectSocket();
 }
@@ -79,7 +78,6 @@ const connectSocket = async (params) => {
         } else {
             privateMessage[uid] = { messages: [ {...rest} ]}; 
         }
-        console.log(privateMessage);
         drawerPrivateMessages( uid );
     });
 
@@ -151,7 +149,6 @@ const drawerMessages = ( messages = [] ) => {
 const drawerPrivateMessages = ( uid = '' ) => {
     let messagesHtml = '';
     const messages = privateMessage[uid]?.messages;
-    console.log(messages);
     if( !messages ) return ulPrivateMessages.innerHTML =`<span class="text-info">Not messages</span>`;
     messages.forEach(({ from, message}) => {
         messagesHtml += `
