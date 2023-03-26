@@ -31,41 +31,19 @@
             </button>
         </div>
         <div class="col-sm-6">
-            
+            <h3>Log In</h3>
+            <hr>
+            <form class="d-grid">
+                <input class="form-control mb-2" type="text" name="email" id="email" placeholder="Email">
+                <input class="form-control mb-2" type="password" name="password" id="password" placeholder="Password">
+                <button class=" btn btn-primary " type="submit">
+                    Log in
+                </button>
+            </form>
         </div>
     </div>
 
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script>
-        function handleCredentialResponse(response) {
-            // Google token
-            const body = { id_token : response.credential };
-            console.log('google token', response.credential);
-            fetch( 'http://localhost:8080/api/auth/google', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify( body )
-            } )
-                .then( resp => resp.json() )
-                .then( resp => {
-                    console.log(resp)
-                    localStorage.setItem( 'email', resp.user.email );
-                })
-                .catch(console.warn)
-
-        }
-
-        const buttonLogOut =  document.getElementById('google_sign_out');
-        buttonLogOut.onclick = () => {
-            console.log( google.accounts.id );
-            google.accounts.id.disableAutoSelect();
-            google.accounts.id.revoke( localStorage.getItem( 'email'), done => {
-                localStorage.clear();
-                location.reload();
-            });
-        };
-    </script>
+    <script src="./js/auth.js"></script>
 </body>
 </html>

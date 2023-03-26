@@ -68,7 +68,18 @@ const googleSingIn = async ( req = request, res = response ) => {
   }
 }
 
+const renewToken = async ( req= request, res = response ) => {
+  const { userAuthenticated } = req;
+  const token = await generateJWT( userAuthenticated.id );
+    res.status(200).json({
+      msg: 'new token',
+      token,
+      userAuthenticated
+    });
+}
+
 module.exports = {
     login,
-    googleSingIn
+    googleSingIn,
+    renewToken
 }
