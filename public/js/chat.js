@@ -3,6 +3,15 @@ const baseUrl = 'http://localhost:8080/api/auth';
 let user =  null;
 let socket = null;
 
+// * references
+
+const textUid= document.querySelector('#textUid');
+const textMessage= document.querySelector('#textMessage');
+const ulUsers= document.querySelector('#ulUsers');
+const ulMessages= document.querySelector('#ulMessages');
+const btnOut= document.querySelector('#btnOut');
+
+
 const validateJWT = async () => {
     const token = localStorage.getItem('token') ?? '';
 
@@ -26,15 +35,34 @@ const validateJWT = async () => {
 }
 
 const connectSocket = async (params) => {
-    const socket = io({
+    socket = io({
         'extraHeaders': {
             'x-token': localStorage.getItem('token')
         }
     });
 
+
+    socket.on( 'connect', () => {
+        console.log('sockets online');
+    });
+
+    socket.on( 'disconnect', () => {
+        console.log('sockets offline');
+    });
+
+    socket.on('receive-message', () => {
+        // TODO:
+    });
+    socket.on('active-users', () => {
+        // TODO:
+    });
+    socket.on('private-message', () => {
+        // TODO: 
+    });
+
 }
 const main = async () => {
-        await validateJWT()
+    await validateJWT()
 }
 
 main();
