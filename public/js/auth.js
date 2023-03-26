@@ -22,6 +22,7 @@ myForm.addEventListener( 'submit', ev => {
     .then( ({ msg, token }) => {
         if ( msg !== 'Login ok' ) throw new Error( 'Not correct authenticated' );
         localStorage.setItem( 'token', token);
+        window.location = 'chat.html';
     })
     .catch( err => console.error );
     console.log(formData);
